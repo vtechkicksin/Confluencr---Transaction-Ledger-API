@@ -52,7 +52,7 @@ Unknown fields (including `balance`) are rejected with `400`, so the client cann
 | Outcome | Status |
 |---------|--------|
 | Created | `201` `{ "message": "Transaction created", "data": {…} }` |
-| `reference_id` already used on this account | `200` `{ "message": "Transaction already exists", "data": {original transaction} }`. Nothing is created and the balance is unchanged |
+| `reference_id` already used on this account | `200` `{ "message": "Transaction already exists", "data": {original transaction} }`. Nothing is created and the balance is unchanged (see Assumption 2 for why this is `200` rather than `409`) |
 | Debit exceeds balance | `422` `INSUFFICIENT_BALANCE` |
 | Invalid body or account id | `400` `VALIDATION_ERROR` |
 | Account does not exist | `404` `NOT_FOUND` |
@@ -130,7 +130,7 @@ Request flow: route → controller → validator → service → repository → 
 ## Assumptions
 
 1. Single currency. Amounts have at most 2 decimal places (minimum 0.01), and an amount or balance that is too large to store exactly is rejected with `400`.
-2. A repeated `reference_id` on the same account is not an error: it returns `200` with the original transaction. The incoming type and amount are not compared with the original.
+2. **Duplicate transactions return `200`, not `409 Conflict`.** A repeated `reference_id` on the same account creates nothing, leaves the balance unchanged, and returns `200` with the message "Transaction already exists" and the original transaction. Reason: `reference_id` works as an idempotency key. A client that retries after a timeout or network failure cannot tell whether its first request succeeded; returning `200` with the original transaction tells it the request already took effect, so it can carry on rather than handle an error for a payment that actually went through. This is the convention used by payment APIs such as Stripe's idempotency keys. The incoming type and amount are not compared with the original.
 3. Balances cannot go below 0.
 4. IDs are server-generated UUIDs. A malformed id returns `400`; a well-formed id that doesn't exist returns `404`.
 5. Unknown JSON fields are rejected, which is how a client-supplied `balance` is refused.
