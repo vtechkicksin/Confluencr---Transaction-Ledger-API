@@ -10,8 +10,6 @@ export default class TransactionController {
       const input = TransactionValidator.validateCreate(req.params.accountId, req.body);
       const { transaction, duplicate } = TransactionService.add(input);
 
-      // Re-submitting a reference_id is not an error: nothing is created and the
-      // original transaction is returned, so client retries are safe.
       res.status(duplicate ? 200 : 201).json({
         message: duplicate ? "Transaction already exists" : "Transaction created",
         duplicate,
@@ -55,7 +53,6 @@ export default class TransactionController {
     }
   }
 
-  // Transactions are immutable: any other method on these URLs is refused.
   static async immutable(_req: Request, res: Response, next: NextFunction): Promise<void> {
     res.setHeader("Allow", "GET, POST");
     next(new MethodNotAllowedError("Transactions are immutable and cannot be modified or deleted"));

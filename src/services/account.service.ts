@@ -5,7 +5,6 @@ import { AccountRow } from "../types";
 
 export default class AccountService {
   static create(name: string): AccountRow {
-    // Balance is never taken from the client: new accounts always start at 0.
     return AccountRepository.create(randomUUID(), name, new Date().toISOString());
   }
 

@@ -12,8 +12,6 @@ import {
 } from "../types";
 
 export default class TransactionService {
-  // Inserting the transaction and updating the balance happen in one database
-  // transaction, so a failure in either step leaves nothing behind.
   static add(input: CreateTransactionInput): { transaction: TransactionRow; duplicate: boolean } {
     return Database.runInTransaction(() => {
       const account = AccountService.getById(input.accountId);

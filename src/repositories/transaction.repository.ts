@@ -33,7 +33,6 @@ export default class TransactionRepository {
     );
   }
 
-  // Latest first. rowid breaks ties between rows created in the same millisecond.
   static findPaginated(
     accountId: string,
     type: TransactionType | undefined,
