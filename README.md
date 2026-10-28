@@ -6,7 +6,7 @@ A backend API for managing accounts, processing credit and debit transactions, t
 
 ## Run it locally
 
-**Requirements:** Node.js **22.5 or newer** (`node -v`). No database server, Docker or `.env` is needed.
+**Requirements:** Node.js **22.13 or newer** (`node -v`). No database server, Docker or `.env` is needed.
 
 ```bash
 npm install
