@@ -39,9 +39,6 @@ export default class Database {
     Database.db().prepare(sql).run(...params);
   }
 
-  // Runs `work` as a single atomic unit: everything is committed, or nothing is.
-  // BEGIN IMMEDIATE takes the write lock up front so concurrent writers cannot
-  // read a stale balance in between our read and our write.
   static runInTransaction<T>(work: () => T): T {
     if (Database.inTransaction) return work();
 

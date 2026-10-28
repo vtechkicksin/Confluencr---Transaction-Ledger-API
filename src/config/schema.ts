@@ -1,6 +1,3 @@
-// Amounts and balances are stored as integer minor units (e.g. paise / cents).
-// Integrity rules live in the database as well as in the services, so they hold
-// even if a bug or a manual query bypasses the application layer.
 export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS accounts (
   id         TEXT PRIMARY KEY,
@@ -37,7 +34,6 @@ CREATE TABLE IF NOT EXISTS transfers (
   UNIQUE (from_account_id, reference_id)
 );
 
--- Transactions are immutable: block any UPDATE or DELETE at the database level.
 CREATE TRIGGER IF NOT EXISTS transactions_no_update
 BEFORE UPDATE ON transactions
 BEGIN
