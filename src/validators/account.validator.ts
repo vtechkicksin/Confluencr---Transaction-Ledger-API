@@ -2,7 +2,6 @@ import { z } from "zod";
 import BaseValidator from "./base.validator";
 
 export default class AccountValidator {
-  // strictObject rejects unknown fields, so a client sending `balance` gets a 400.
   private static readonly createSchema = z.strictObject({
     name: BaseValidator.requiredString("name", 100),
   });
