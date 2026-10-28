@@ -9,7 +9,6 @@ export default class TransferValidator {
     to_account_id: BaseValidator.id("to_account_id"),
     amount: BaseValidator.amount(),
     description: BaseValidator.optionalDescription(),
-    reference_id: BaseValidator.requiredString("reference_id", 100),
   });
 
   static validateCreate(body: unknown): CreateTransferInput {
@@ -22,7 +21,6 @@ export default class TransferValidator {
       toAccountId: data.to_account_id,
       amount: data.amount,
       description: data.description,
-      referenceId: data.reference_id,
     };
   }
 }

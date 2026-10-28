@@ -8,15 +8,18 @@ export default class TransferController {
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const input = TransferValidator.validateCreate(req.body);
-      const { transfer, fromAccount, toAccount, duplicate } = TransferService.create(input);
+      const { debit, credit, fromAccount, toAccount } = TransferService.create(input);
 
-      res.status(duplicate ? 200 : 201).json({
-        message: duplicate ? "Transfer already exists" : "Transfer completed",
-        duplicate,
+      res.status(201).json({
+        message: "Transfer completed",
         data: {
-          ...Presenter.transfer(transfer),
+          from_account_id: fromAccount.id,
+          to_account_id: toAccount.id,
+          amount: Money.toMajor(debit.amount),
           from_account_balance: Money.toMajor(fromAccount.balance),
           to_account_balance: Money.toMajor(toAccount.balance),
+          debit_transaction: Presenter.transaction(debit),
+          credit_transaction: Presenter.transaction(credit),
         },
       });
     } catch (error) {

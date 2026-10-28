@@ -15,15 +15,6 @@ export default class AccountController {
     }
   }
 
-  static async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const id = AccountValidator.validateId(req.params.accountId);
-      res.status(200).json({ data: Presenter.account(AccountService.getById(id)) });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async getBalance(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = AccountValidator.validateId(req.params.accountId);

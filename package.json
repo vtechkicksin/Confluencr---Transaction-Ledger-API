@@ -4,19 +4,9 @@
   "description": "Transaction ledger API",
   "main": "src/server.ts",
   "scripts": {
-    "start": "tsx src/server.ts",
-    "dev": "tsx watch src/server.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vtechkicksin/Confluencr---Transaction-Ledger-API.git"
+    "start": "tsx src/server.ts"
   },
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/vtechkicksin/Confluencr---Transaction-Ledger-API/issues"
-  },
-  "homepage": "https://github.com/vtechkicksin/Confluencr---Transaction-Ledger-API#readme",
   "engines": {
     "node": ">=22.5"
   },

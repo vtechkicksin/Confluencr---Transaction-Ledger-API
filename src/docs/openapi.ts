@@ -58,28 +58,6 @@ export const openApiSpec = {
         },
       },
     },
-    "/accounts/{accountId}": {
-      get: {
-        tags: ["Accounts"],
-        summary: "Get an account",
-        parameters: [accountIdParam],
-        responses: {
-          "200": {
-            description: "Account",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: { data: { $ref: "#/components/schemas/Account" } },
-                },
-              },
-            },
-          },
-          "400": errorResponse("Invalid account id"),
-          "404": errorResponse("Account not found"),
-        },
-      },
-    },
     "/accounts/{accountId}/balance": {
       get: {
         tags: ["Accounts"],
@@ -115,7 +93,7 @@ export const openApiSpec = {
         tags: ["Transactions"],
         summary: "Add a credit or debit transaction",
         description:
-          "Idempotent per account on reference_id: re-sending the same reference_id creates nothing, " +
+          "reference_id is unique per account: re-sending the same reference_id creates nothing, " +
           "leaves the balance unchanged and returns 200 with the original transaction.",
         parameters: [accountIdParam],
         requestBody: {
@@ -157,7 +135,7 @@ export const openApiSpec = {
           accountIdParam,
           { name: "type", in: "query", schema: { type: "string", enum: ["credit", "debit"] } },
           { name: "page", in: "query", schema: { type: "integer", minimum: 1, default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 10 } },
+          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, default: 10 } },
         ],
         responses: {
           "200": {
@@ -187,46 +165,26 @@ export const openApiSpec = {
         },
       },
     },
-    "/accounts/{accountId}/transactions/{transactionId}": {
-      get: {
-        tags: ["Transactions"],
-        summary: "Get one transaction",
-        description: "PUT, PATCH and DELETE are rejected with 405: transactions are immutable.",
-        parameters: [
-          accountIdParam,
-          { name: "transactionId", in: "path", required: true, schema: { type: "string", format: "uuid" } },
-        ],
-        responses: {
-          "200": {
-            description: "Transaction",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/TransactionResponse" } } },
-          },
-          "404": errorResponse("Account or transaction not found"),
-          "405": errorResponse("Transactions cannot be modified or deleted"),
-        },
-      },
-    },
     "/transfers": {
       post: {
         tags: ["Transfers"],
         summary: "Transfer money between two accounts (atomic)",
         description:
           "Debits the source and credits the destination in a single database transaction. " +
-          "reference_id is unique per source account; a repeat returns 200 with the original transfer.",
+          "If any step fails, nothing is saved.",
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["from_account_id", "to_account_id", "amount", "reference_id"],
+                required: ["from_account_id", "to_account_id", "amount"],
                 additionalProperties: false,
                 properties: {
                   from_account_id: { type: "string", format: "uuid" },
                   to_account_id: { type: "string", format: "uuid" },
                   amount: { type: "number", exclusiveMinimum: 0, example: 30 },
                   description: { type: "string" },
-                  reference_id: { type: "string", example: "trf-001" },
                 },
               },
             },
@@ -234,7 +192,6 @@ export const openApiSpec = {
         },
         responses: {
           "201": { description: "Transfer completed" },
-          "200": { description: "Duplicate reference_id: original transfer returned" },
           "400": errorResponse("Validation error"),
           "404": errorResponse("Source or destination account not found"),
           "422": errorResponse("Insufficient balance in source account"),
@@ -269,7 +226,6 @@ export const openApiSpec = {
         type: "object",
         properties: {
           message: { type: "string" },
-          duplicate: { type: "boolean" },
           data: { $ref: "#/components/schemas/Transaction" },
         },
       },

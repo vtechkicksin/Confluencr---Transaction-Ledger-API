@@ -11,21 +11,16 @@ export default class TransactionValidator {
     type: TransactionValidator.typeSchema,
     amount: BaseValidator.amount(),
     description: BaseValidator.optionalDescription(),
-    reference_id: BaseValidator.requiredString("reference_id", 100),
+    reference_id: BaseValidator.requiredString("reference_id"),
   });
 
   private static readonly listSchema = z.object({
     type: TransactionValidator.typeSchema.optional(),
     page: BaseValidator.positiveInt("page").default(1),
-    limit: BaseValidator.positiveInt("limit", 100).default(10),
+    limit: BaseValidator.positiveInt("limit").default(10),
   });
 
   private static readonly accountIdSchema = z.object({ accountId: BaseValidator.id("accountId") });
-
-  private static readonly idsSchema = z.object({
-    accountId: BaseValidator.id("accountId"),
-    transactionId: BaseValidator.id("transactionId"),
-  });
 
   static validateCreate(accountId: unknown, body: unknown): CreateTransactionInput {
     const id = TransactionValidator.validateAccountId(accountId);
@@ -43,10 +38,6 @@ export default class TransactionValidator {
     const id = TransactionValidator.validateAccountId(accountId);
     const data = BaseValidator.parse(TransactionValidator.listSchema, query ?? {});
     return { accountId: id, type: data.type, page: data.page, limit: data.limit };
-  }
-
-  static validateIds(accountId: unknown, transactionId: unknown) {
-    return BaseValidator.parse(TransactionValidator.idsSchema, { accountId, transactionId });
   }
 
   private static validateAccountId(accountId: unknown): string {

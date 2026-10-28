@@ -31,11 +31,6 @@ export class NotFoundError extends AppError {
   override readonly code = "NOT_FOUND";
 }
 
-export class MethodNotAllowedError extends AppError {
-  override readonly statusCode = 405;
-  override readonly code = "METHOD_NOT_ALLOWED";
-}
-
 export class InsufficientBalanceError extends AppError {
   override readonly statusCode = 422;
   override readonly code = "INSUFFICIENT_BALANCE";

@@ -13,19 +13,17 @@ export default class BaseValidator {
     return z.uuid({ error: `${field} must be a valid UUID` });
   }
 
-  static requiredString(field: string, max: number) {
+  static requiredString(field: string) {
     return z
       .string({ error: (issue) => (issue.input === undefined ? `${field} is required` : `${field} must be a string`) })
       .trim()
-      .min(1, `${field} is required`)
-      .max(max, `${field} must be at most ${max} characters`);
+      .min(1, `${field} is required`);
   }
 
   static optionalDescription() {
     return z
       .string({ error: "description must be a string" })
       .trim()
-      .max(255, "description must be at most 255 characters")
       .default("");
   }
 
@@ -36,15 +34,19 @@ export default class BaseValidator {
           issue.input === undefined ? "amount is required" : "amount must be a number",
       })
       .positive("amount must be greater than 0")
-      .max(Money.MAX_MAJOR, `amount must not exceed ${Money.MAX_MAJOR}`)
       .refine(Money.hasValidScale, "amount must have at most 2 decimal places")
-      .transform(Money.toMinor);
+      .transform(Money.toMinor)
+      .pipe(
+        z
+          .number()
+          .min(1, "amount must be at least 0.01")
+          .refine(Number.isSafeInteger, "amount is too large")
+      );
   }
 
-  static positiveInt(field: string, max?: number) {
+  static positiveInt(field: string) {
     const message = `${field} must be a positive integer`;
-    let numeric = z.number().int(message).min(1, message);
-    if (max) numeric = numeric.max(max, `${field} must be at most ${max}`);
+    const numeric = z.number().int(message).min(1, message);
     return z
       .string({ error: message })
       .regex(/^\d+$/, message)

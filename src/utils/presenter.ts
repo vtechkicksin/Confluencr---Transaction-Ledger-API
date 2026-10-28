@@ -1,4 +1,4 @@
-import { AccountRow, TransactionRow, TransferRow } from "../types";
+import { AccountRow, TransactionRow } from "../types";
 import Money from "./money";
 
 export default class Presenter {
@@ -19,20 +19,6 @@ export default class Presenter {
       amount: Money.toMajor(row.amount),
       description: row.description,
       reference_id: row.reference_id,
-      created_at: row.created_at,
-    };
-  }
-
-  static transfer(row: TransferRow) {
-    return {
-      id: row.id,
-      from_account_id: row.from_account_id,
-      to_account_id: row.to_account_id,
-      amount: Money.toMajor(row.amount),
-      description: row.description,
-      reference_id: row.reference_id,
-      debit_transaction_id: row.debit_transaction_id,
-      credit_transaction_id: row.credit_transaction_id,
       created_at: row.created_at,
     };
   }

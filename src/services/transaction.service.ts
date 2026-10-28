@@ -3,7 +3,7 @@ import Database from "../config/database";
 import AccountRepository from "../repositories/account.repository";
 import TransactionRepository from "../repositories/transaction.repository";
 import AccountService from "./account.service";
-import { InsufficientBalanceError, NotFoundError } from "../errors/AppError";
+import { InsufficientBalanceError, ValidationError } from "../errors/AppError";
 import {
   CreateTransactionInput,
   Paginated,
@@ -24,6 +24,9 @@ export default class TransactionService {
       if (newBalance < 0) {
         throw new InsufficientBalanceError("Insufficient balance for this debit");
       }
+      if (!Number.isSafeInteger(newBalance)) {
+        throw ValidationError.single("amount", "amount would make the balance too large");
+      }
 
       const transaction = TransactionRepository.create({
         id: randomUUID(),
@@ -38,13 +41,6 @@ export default class TransactionService {
 
       return { transaction, duplicate: false };
     });
-  }
-
-  static getById(accountId: string, transactionId: string): TransactionRow {
-    AccountService.getById(accountId);
-    const transaction = TransactionRepository.findById(accountId, transactionId);
-    if (!transaction) throw new NotFoundError("Transaction not found");
-    return transaction;
   }
 
   static getHistory(query: TransactionHistoryQuery): Paginated<TransactionRow> {

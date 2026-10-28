@@ -17,18 +17,6 @@ export interface TransactionRow {
   created_at: string;
 }
 
-export interface TransferRow {
-  id: string;
-  from_account_id: string;
-  to_account_id: string;
-  amount: number;
-  description: string;
-  reference_id: string;
-  debit_transaction_id: string;
-  credit_transaction_id: string;
-  created_at: string;
-}
-
 export interface CreateTransactionInput {
   accountId: string;
   type: TransactionType;
@@ -49,7 +37,6 @@ export interface CreateTransferInput {
   toAccountId: string;
   amount: number;
   description: string;
-  referenceId: string;
 }
 
 export interface Paginated<T> {

@@ -1,6 +1,4 @@
 export default class Money {
-  static readonly MAX_MAJOR = 1_000_000_000;
-
   static hasValidScale(value: number): boolean {
     const scaled = value * 100;
     return Math.abs(scaled - Math.round(scaled)) < 1e-6;

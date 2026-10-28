@@ -13,18 +13,11 @@ export default class Database {
   static connect(): void {
     if (Database.connection) return;
 
-    if (Config.dbPath !== ":memory:") {
-      fs.mkdirSync(path.dirname(Config.dbPath), { recursive: true });
-    }
+    fs.mkdirSync(path.dirname(Config.dbPath), { recursive: true });
 
     Database.connection = new DatabaseSync(Config.dbPath);
     Database.connection.exec("PRAGMA foreign_keys = ON");
     Database.connection.exec(SCHEMA);
-  }
-
-  static close(): void {
-    Database.connection?.close();
-    Database.connection = null;
   }
 
   static get<T>(sql: string, ...params: Param[]): T | undefined {

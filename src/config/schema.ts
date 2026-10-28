@@ -17,23 +17,6 @@ CREATE TABLE IF NOT EXISTS transactions (
   UNIQUE (account_id, reference_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_transactions_account_created
-  ON transactions (account_id, created_at DESC);
-
-CREATE TABLE IF NOT EXISTS transfers (
-  id                    TEXT PRIMARY KEY,
-  from_account_id       TEXT NOT NULL REFERENCES accounts(id),
-  to_account_id         TEXT NOT NULL REFERENCES accounts(id),
-  amount                INTEGER NOT NULL CHECK (amount > 0),
-  description           TEXT NOT NULL DEFAULT '',
-  reference_id          TEXT NOT NULL CHECK (length(trim(reference_id)) > 0),
-  debit_transaction_id  TEXT NOT NULL REFERENCES transactions(id),
-  credit_transaction_id TEXT NOT NULL REFERENCES transactions(id),
-  created_at            TEXT NOT NULL,
-  CHECK (from_account_id <> to_account_id),
-  UNIQUE (from_account_id, reference_id)
-);
-
 CREATE TRIGGER IF NOT EXISTS transactions_no_update
 BEFORE UPDATE ON transactions
 BEGIN

@@ -3,7 +3,7 @@ import BaseValidator from "./base.validator";
 
 export default class AccountValidator {
   private static readonly createSchema = z.strictObject({
-    name: BaseValidator.requiredString("name", 100),
+    name: BaseValidator.requiredString("name"),
   });
 
   static validateCreate(body: unknown): { name: string } {
